@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyectos</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h2>Ingresar Nuevo Proyecto</h2>
+        <form id="projectForm">
+            <div class="mb-3">
+                <label for="name">Nombre:</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="mb-3">
+                <label for="grade">Calificación:</label>
+                <input type="text" class="form-control" id="grade" name="grade" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+
+        <hr>
+
+        <h2>Lista de Proyectos</h2>
+        <ul id="projectList" class="list-group">
+        </ul>
+    </div>
+
+    <script>
+        function loadProjects() {
+            fetch('http://localhost:8080/api/v1/project')
+                .then(response => response.json())
+                .then(data => {
+                    const projectList = document.getElementById('projectList');
+                    projectList.innerHTML = '';
+
+                    data.forEach(project => {
+                        const listItem = document.createElement('td');
+                        listItem.className = 'list-group-item';
+                        listItem.textContent = `Nombre: ${project.name} Calificación: ${project.grade}`;
+                        projectList.appendChild(listItem);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error al cargar proyectos:', error);
+                });
+        }
+
+        const projectForm = document.getElementById('projectForm');
+        projectForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const grade = document.getElementById('grade').value;
+
+            fetch('http://localhost:8080/api/v1/project', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, grade })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        loadProjects();
+                        document.getElementById('name').value = '';
+                        document.getElementById('grade').value = '';
+                    } else {
+                        console.error('Error al guardar proyecto:', response.status);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al guardar proyecto:', error);
+                });
+        });
+
+        loadProjects();
+    </script>
+</body>
+
+</html>

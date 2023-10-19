@@ -69,5 +69,5 @@ class ActividadApplicationTests {
 	public void getProject_ReturnsNotFoundList() {
 		ResponseEntity<List<Project>> response = projectController.getProject();
 		Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-	}
+		}
 }

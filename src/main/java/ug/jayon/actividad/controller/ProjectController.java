@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,11 +18,12 @@ import ug.jayon.actividad.repository.ProjectRepo;
 
 @RestController
 @RequestMapping("/project")
+@CrossOrigin(origins = "*")
 public class ProjectController {
 
     @Autowired
     private ProjectRepo projectRepo;
-
+    
     @GetMapping
     public ResponseEntity<List<Project>> getProject() {
         return projectRepo.findAll().isEmpty()
@@ -31,6 +33,10 @@ public class ProjectController {
 
     @PostMapping
     public ResponseEntity<Project> postProject(@RequestBody @Valid Project project) {
-        return ResponseEntity.ok(projectRepo.save(project));
+        try {
+            return ResponseEntity.ok(projectRepo.save(project));
+        } catch (Exception e) {
+            throw new RuntimeException("Error al crear el proyecto."+ e.getMessage());
+        }
     }
 }
